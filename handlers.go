@@ -44,6 +44,9 @@ func (h *Handler) SetupRoutes() *http.ServeMux {
 	// Bonus: GET /summary (Admin or Viewer)
 	mux.HandleFunc("GET /summary", h.handleSummary)
 
+	// Root endpoint: GET /{$} provides status and documentation when opened in a browser
+	mux.HandleFunc("GET /{$}", h.handleRoot)
+
 	return mux
 }
 
@@ -345,4 +348,23 @@ func (h *Handler) handleSummary(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusOK, summary)
+}
+
+// handleRoot returns API status and documentation when visiting the root URL in a browser.
+func (h *Handler) handleRoot(w http.ResponseWriter, r *http.Request) {
+	writeJSON(w, http.StatusOK, map[string]any{
+		"service": "Threat Alert API",
+		"status":  "healthy",
+		"message": "Threat Alert API backend is running. Use Postman, curl, or an HTTP client to interact with the endpoints.",
+		"endpoints": []string{
+			"POST /register",
+			"POST /users",
+			"POST /apps",
+			"POST /alerts",
+			"GET /alerts",
+			"GET /alerts/{id}",
+			"POST /alerts/{id}/resolve",
+			"GET /summary",
+		},
+	})
 }
