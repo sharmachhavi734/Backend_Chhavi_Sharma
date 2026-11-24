@@ -163,10 +163,7 @@ func (s *Store) GetUserByToken(token string) (*User, bool) {
 	defer s.mu.RUnlock()
 
 	user, ok := s.usersByToken[token]
-	if !ok {
-		return nil, false
-	}
-	return user, true
+	return user, ok
 }
 
 // GetAppByKey looks up an app by its secret appKey.
@@ -175,10 +172,7 @@ func (s *Store) GetAppByKey(appKey string) (*App, bool) {
 	defer s.mu.RUnlock()
 
 	app, ok := s.appsByKey[appKey]
-	if !ok {
-		return nil, false
-	}
-	return app, true
+	return app, ok
 }
 
 // RecordAlert handles threat reporting from the SDK with atomic repeat deduplication.

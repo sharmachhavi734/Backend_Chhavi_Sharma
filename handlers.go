@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 )
@@ -333,17 +334,9 @@ func (h *Handler) handleSummary(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, a := range alerts {
-		switch a.Severity {
-		case 1:
-			summary["severity_1"]++
-		case 2:
-			summary["severity_2"]++
-		case 3:
-			summary["severity_3"]++
-		case 4:
-			summary["severity_4"]++
-		case 5:
-			summary["severity_5"]++
+		key := fmt.Sprintf("severity_%d", a.Severity)
+		if _, exists := summary[key]; exists {
+			summary[key]++
 		}
 	}
 

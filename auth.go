@@ -23,12 +23,7 @@ func authenticateUser(r *http.Request, store *Store) (*User, bool) {
 		return nil, false
 	}
 
-	user, ok := store.GetUserByToken(token)
-	if !ok {
-		return nil, false
-	}
-
-	return user, true
+	return store.GetUserByToken(token)
 }
 
 // authenticateSDK extracts and validates the X-App-Key header.
@@ -39,12 +34,7 @@ func authenticateSDK(r *http.Request, store *Store) (*App, bool) {
 		return nil, false
 	}
 
-	app, ok := store.GetAppByKey(appKey)
-	if !ok {
-		return nil, false
-	}
-
-	return app, true
+	return store.GetAppByKey(appKey)
 }
 
 // requireAdmin checks if the user has admin role (Rule R4: 403).

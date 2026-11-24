@@ -19,27 +19,29 @@ func writeError(w http.ResponseWriter, statusCode int, message string) {
 	writeJSON(w, statusCode, ErrorResponse{Error: message})
 }
 
-// validateRegisterInput validates the fields for POST /register.
-func validateRegisterInput(req RegisterRequest) error {
-	if strings.TrimSpace(req.OrgName) == "" {
-		return errors.New("orgName must not be empty")
-	}
-	if strings.TrimSpace(req.Name) == "" {
+// validateNameAndEmail ensures name is non-empty and email contains '@'.
+func validateNameAndEmail(name, email string) error {
+	if strings.TrimSpace(name) == "" {
 		return errors.New("name must not be empty")
 	}
-	if strings.TrimSpace(req.Email) == "" || !strings.Contains(req.Email, "@") {
+	if strings.TrimSpace(email) == "" || !strings.Contains(email, "@") {
 		return errors.New("email must not be empty and must contain @")
 	}
 	return nil
 }
 
+// validateRegisterInput validates the fields for POST /register.
+func validateRegisterInput(req RegisterRequest) error {
+	if strings.TrimSpace(req.OrgName) == "" {
+		return errors.New("orgName must not be empty")
+	}
+	return validateNameAndEmail(req.Name, req.Email)
+}
+
 // validateCreateUserInput validates the fields for POST /users.
 func validateCreateUserInput(req CreateUserRequest) error {
-	if strings.TrimSpace(req.Name) == "" {
-		return errors.New("name must not be empty")
-	}
-	if strings.TrimSpace(req.Email) == "" || !strings.Contains(req.Email, "@") {
-		return errors.New("email must not be empty and must contain @")
+	if err := validateNameAndEmail(req.Name, req.Email); err != nil {
+		return err
 	}
 	if req.Role != "admin" && req.Role != "viewer" {
 		return errors.New("role must be admin or viewer")
